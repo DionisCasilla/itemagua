@@ -19,10 +19,8 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   void _makeRequest() async {
-    // This example uses the Google Books API to search for books about http.
-    // https://developers.google.com/books/docs/overview
-    var url =
-        Uri.https('127.0.0.1:8001', '/agua/sucursales', {'q': '{http}'});
+
+        final Uri url = Uri.parse("http://192.168.42.246:8001/agua/sucursales");
 
     // Await the http get response, then decode the json-formatted response.
     var response = await http.get(url);
