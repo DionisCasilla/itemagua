@@ -1,5 +1,4 @@
 import 'package:aguapp/pagesIndex.dart';
-import 'package:aguapp/src/page/orders/details.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -16,8 +15,6 @@ class MyApp extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     return MaterialApp(
       title: 'Agua App',
-     
-
       theme: ThemeData(
           // This is the theme of your application.
           //
@@ -30,7 +27,7 @@ class MyApp extends StatelessWidget {
           // is not restarted.
           primarySwatch: Colors.blue,
           textTheme: GoogleFonts.latoTextTheme(textTheme)),
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }

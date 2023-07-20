@@ -1,6 +1,7 @@
 import 'package:aguapp/src/constants/AppImages.dart';
 import 'package:aguapp/src/constants/Colors.dart';
 import 'package:aguapp/src/page/orders/orderspage.dart';
+// import 'package:aguapp/src/services/location.services.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,14 +13,20 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentPage = 0;
+  // final geo = Geolocation();
 
-  var _pages = [
-    Home(),
-    Text("Página 2"),
-    OrdersPage(),
-    Text("Página 4"),
-    Text("Página 5")
-  ];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+//    getLocation();
+  }
+
+  // getLocation() async {
+  //   await geo.determinePosition();
+  // }
+
+  var pages = const [Text("Página 1"), Text("Página 2"), OrdersPage(), Text("Página 4"), Text("Página 5")];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -35,12 +42,12 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: colore2f6ff,
           elevation: 0,
           centerTitle: true,
-          title: const Text(
-            "Inicio",
-            style: TextStyle(color: color3db8e6, fontWeight: FontWeight.w600),
+          title: Text(
+            _currentPage != 2 ? "Inicio" : "Localidades",
+            style: const TextStyle(color: color3db8e6, fontWeight: FontWeight.w600),
           )),
       body: Center(
-        child: _pages[_currentPage],
+        child: pages[_currentPage],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPage,
@@ -94,10 +101,7 @@ class Home extends StatelessWidget {
             ),
             const Text(
               "Novedades",
-              style: TextStyle(
-                  color: color2e55a5,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold),
+              style: TextStyle(color: color2e55a5, fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(
               height: 10,
@@ -112,10 +116,7 @@ class Home extends StatelessWidget {
             ),
             const Text(
               "Catalogo",
-              style: TextStyle(
-                  color: color2e55a5,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold),
+              style: TextStyle(color: color2e55a5, fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(
               height: 160,
@@ -135,18 +136,14 @@ class Home extends StatelessWidget {
                             Align(
                               alignment: Alignment.bottomCenter,
                               child: Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.lightBlueAccent.shade100,
-                                    borderRadius: BorderRadius.circular(10)),
+                                decoration: BoxDecoration(color: Colors.lightBlueAccent.shade100, borderRadius: BorderRadius.circular(10)),
                                 // color: Colors.blue,
                                 height: 60,
                                 width: double.infinity,
                               ),
                             ),
                             Image.asset(AppImages.botellon, width: 140),
-                            const Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Text("Botellon")),
+                            const Align(alignment: Alignment.bottomCenter, child: Text("Botellon")),
                           ],
                         )),
                   );
@@ -178,10 +175,8 @@ class MyPainter extends CustomPainter {
 
     final path = Path();
     path.lineTo(0, size.height * 0.2);
-    path.quadraticBezierTo(
-        size.width * .25, size.height * 0.2, size.width, size.height * 0.1);
-    path.quadraticBezierTo(
-        size.width * .25, size.height * 0.2, size.width, size.height * 0.2);
+    path.quadraticBezierTo(size.width * .25, size.height * 0.2, size.width, size.height * 0.1);
+    path.quadraticBezierTo(size.width * .25, size.height * 0.2, size.width, size.height * 0.2);
     path.lineTo(size.width, 0);
     canvas.drawPath(path, paint);
   }

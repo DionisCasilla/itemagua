@@ -1,7 +1,6 @@
 import 'package:aguapp/src/page/orders/details.dart';
+import 'package:aguapp/src/services/agua.services.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({Key? key}) : super(key: key);
@@ -11,6 +10,7 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
+  final aguaprovider = AguaProvider();
   List<dynamic> _elements = [];
   bool isLoading = true;
   final TextEditingController _searchController = TextEditingController();
@@ -18,91 +18,68 @@ class _OrdersPageState extends State<OrdersPage> {
   @override
   void initState() {
     super.initState();
+
     _makeRequest();
   }
 
-  void _makeRequest() async {
-    final Uri url = Uri.parse("http://192.168.42.246:8001/agua/sucursales");
+  void _makeRequest({String search = ""}) async {
+    setState(() {
+      isLoading = true;
+    });
+    final data = await aguaprovider.getSucursalesList(search: search);
 
-    // Await the http get response, then decode the json-formatted response.
-    var response = await http.get(url);
-    if (response.statusCode == 200) {
-      var jsonResponse =
-          convert.jsonDecode(response.body) as Map<String, dynamic>;
-
-      setState(() {
-        _elements = jsonResponse['result'];
-        isLoading = false;
-      });
-    } else {
-      print('Request failed with status: ${response.statusCode}.');
-    }
+    setState(() {
+      _elements = data['result'];
+      isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Lista de elementos')),
-      body: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(5.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(hintText: 'Buscar elementos'),
-              onChanged: (value) {
-                // TODO: Implementar la lógica de búsqueda
-                print(_searchController);
-              },
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Lista de Clientes')),
+        body: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(5.0),
+              child: TextField(controller: _searchController, decoration: const InputDecoration(hintText: 'Buscar elementos'), onChanged: (valor) => _makeRequest(search: valor)),
             ),
-          ),
-          Expanded(
-            child: isLoading
-                ? Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: _elements.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final element = _elements[index];
-                      return ListTile(
-                        leading:
-                            Text('ID: ${element['ContactoID'].toString()}'),
-                        title: Container(
-                          padding: EdgeInsets.all(5.0),
-                          // decoration: BoxDecoration(
-
-                          // ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Text(
-                                  'Cliente: ${element['ContactoTexto'].toString()}'),
-                            ],
-                          ),
-                        ),
-                        subtitle: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Text(
-                                  'Direccion: ${element['ContactoDireccion'].toString()}'),
-                              Text(
-                                  'Location 1: ${element['ContactoLocation'].toString()}'),
-                              Text(
-                                  'Location 2: ${element['ContactoLocation2 '].toString()}'),
+            Expanded(
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                      itemCount: _elements.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final element = _elements[index];
+                        return ListTile(
+                          leading: Text(element['CLIENTE_ID'].toString()),
+                          title: Text(element['CLIENTE_NOMBRE'].toString().trimRight()),
+                          subtitle: SizedBox(
+                            width: 200,
+                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                              Text('Direccion: ${element['DIRECCION'].toString()}'),
+                              Text('Telefono: ${element['TELEFONO'].toString()}'),
+                              // Text('Location 1: ${element['MAP_PIN'].toString()}'),
+                              // Text('Location 2: ${element['ContactoLocation2 '].toString()}'),
                             ]),
-                        trailing: Icon(Icons.arrow_forward),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Details(element: element),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-          ),
-        ],
+                          ),
+                          trailing: const Icon(Icons.arrow_forward),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Details(element: element),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }

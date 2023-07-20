@@ -1,32 +1,63 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
+
+import 'package:aguapp/src/constants/Endpoint.dart';
+
 class AguaProvider {
-  getSucursalesList() {
-    // try {
-    //   final Uri urlLogin = Uri.parse("${prefs.baseUrl}api/service");
+  getSucursalesList({String search = ""}) async {
+    try {
+      final Uri urlLogin = Uri.parse("${Endpoint.baseUrlDev}sucursales?search=$search");
 
-    //   final requestData = await http.get(
-    //     urlLogin,
-    //     headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'Connection': 'keep-alive', 'Authorization': prefs.uToken},
-    //   );
+      final requestData = await http.get(
+        urlLogin,
+        headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'Connection': 'keep-alive'},
+      );
 
-    //   final decodedData = json.decode(requestData.body);
-    //   // final AppointmentServiceModel dataService = AppointmentServiceModel.fromJson(decodedData);
+      final decodedData = json.decode(requestData.body);
+      print(decodedData);
+      return decodedData;
+    } on TimeoutException catch (e) {
+      // return AppointmentServiceModel();
+      // print(e);
+    } on SocketException catch (e) {
+      print(e);
+      //alertApp(contextSA, AlertAppModel(title: "Error", message: e.message));
+      // return AppointmentServiceModel();
+    } catch (e) {
+      print(e);
+      //alertApp(contextSA, AlertAppModel(title: "Error", message: e.toString()));
+      // return AppointmentServiceModel();
+    }
+  }
 
-    //   if (dataService.success!) {
-    //     return dataService;
-    //   } else {
-    //     return AppointmentServiceModel();
-    //   }
+  updateLocation(Map sucursal) async {
+    try {
+      final Uri urlLogin = Uri.parse("${Endpoint.baseUrlDev}sucursales/${sucursal["CLIENTE_ID"]}");
+      //print(urlLogin);
 
-    //   // return AppointmentServiceModel();
-    // } on TimeoutException catch (e) {
+      final requestData = await http.put(
+        urlLogin,
+        body: jsonEncode(sucursal),
+        headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'Connection': 'keep-alive'},
+      );
 
-    //   // return AppointmentServiceModel();
-    // } on SocketException catch (e) {
-    //   //alertApp(contextSA, AlertAppModel(title: "Error", message: e.message));
-    //   // return AppointmentServiceModel();
-    // } catch (e) {
-    //   //alertApp(contextSA, AlertAppModel(title: "Error", message: e.toString()));
-    //   // return AppointmentServiceModel();
-    // }
+      final decodedData = json.decode(requestData.body);
+      print(decodedData);
+      return decodedData;
+    } on TimeoutException catch (e) {
+      // return AppointmentServiceModel();
+      print(e);
+    } on SocketException catch (e) {
+      print(e);
+      //alertApp(contextSA, AlertAppModel(title: "Error", message: e.message));
+      // return AppointmentServiceModel();
+    } catch (e) {
+      print(e);
+      //alertApp(contextSA, AlertAppModel(title: "Error", message: e.toString()));
+      // return AppointmentServiceModel();
+    }
   }
 }
